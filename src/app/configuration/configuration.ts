@@ -3,9 +3,9 @@ export const configuration = [
   {
     A: {
       subTasks: {
-        1: false,
-        2: false,
-        3: false,
+        1: true,
+        2: true,
+        3: true,
         4: false,
         5: false,
         6: false,

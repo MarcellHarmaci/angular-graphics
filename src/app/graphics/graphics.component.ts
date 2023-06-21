@@ -1,11 +1,11 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import { AfterViewInit, Component, ViewChild } from '@angular/core';
 import Konva from "konva";
 import Shape = Konva.Shape;
 import Group = Konva.Group;
-import {MatMenuTrigger} from "@angular/material/menu";
-import {ShapeType} from "src/app/_models/shape-type";
-import {CarShape} from "src/app/graphics/shapes/car";
-import {ParkingShape} from "src/app/graphics/shapes/parking";
+import { MatMenuTrigger } from "@angular/material/menu";
+import { ShapeType } from "src/app/_models/shape-type";
+import { CarShape } from "src/app/graphics/shapes/car";
+import { ParkingShape } from "src/app/graphics/shapes/parking";
 
 @Component({
   selector: 'app-graphics',
@@ -20,6 +20,10 @@ export class GraphicsComponent implements AfterViewInit {
   selectedLayer?: Konva.Layer;
   selectedShape: ShapeType = ShapeType.CAR;
   stage?: Konva.Stage;
+  shapes: Shape[] = [];
+
+  carCnt: number = 1;
+  lastCar?: CarShape = undefined;
 
   ShapeType = ShapeType;
 
@@ -37,7 +41,7 @@ export class GraphicsComponent implements AfterViewInit {
         if (event.target instanceof Shape) {
           if (event.target.parent instanceof Group) {
             this.clickedShape = event.target.parent;
-          } else  {
+          } else {
             this.clickedShape = event.target;
           }
           this.menuPositionLeft = event.target.getClientRect().x;
@@ -52,6 +56,17 @@ export class GraphicsComponent implements AfterViewInit {
           }
         }
       });
+
+      this.stage.on('dragmove', function (event) {
+        console.log(event);
+
+      //   const target = event.target as Shape;
+        
+      //   if (target.attrs.type === ShapeType.CAR) {
+      //     const car = target as unknown as CarShape
+      //   }
+        
+      });
     }
   }
 
@@ -62,9 +77,18 @@ export class GraphicsComponent implements AfterViewInit {
   drawShape(shapeType: ShapeType, x: number, y: number) {
     if (this.stage && this.selectedLayer) {
       let shape;
-      switch(shapeType) {
+      switch (shapeType) {
         case ShapeType.CAR:
-          shape = new CarShape(this.stage, x, y, 50, 25);
+          shape = new CarShape(this.stage, x, y, 50, 25, this.carCnt);
+
+          // add connections
+          shape.addNeighbor(this.lastCar);
+          this.lastCar?.addNeighbor(shape);
+
+          // update state
+          this.carCnt += 1;
+          this.lastCar = shape;
+
           break;
         case ShapeType.PARKING:
           shape = new ParkingShape(this.stage, x, y, 50, 50);
