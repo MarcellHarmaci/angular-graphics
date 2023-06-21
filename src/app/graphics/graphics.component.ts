@@ -58,14 +58,7 @@ export class GraphicsComponent implements AfterViewInit {
       });
 
       this.stage.on('dragmove', function (event) {
-        console.log(event);
-
-      //   const target = event.target as Shape;
-        
-      //   if (target.attrs.type === ShapeType.CAR) {
-      //     const car = target as unknown as CarShape
-      //   }
-        
+        // console.log(event);
       });
     }
   }
@@ -91,6 +84,10 @@ export class GraphicsComponent implements AfterViewInit {
 
           break;
         case ShapeType.PARKING:
+          if (this.lastCar) {
+            this.lastCar.x += 50;
+            this.lastCar.y += 50;
+          }
           shape = new ParkingShape(this.stage, x, y, 50, 50);
           break;
       }
@@ -126,6 +123,10 @@ export class GraphicsComponent implements AfterViewInit {
 
   shapeToTop() {
     this.clickedShape?.moveToTop();
+  }
+
+  newConnection() {
+    
   }
 
 }

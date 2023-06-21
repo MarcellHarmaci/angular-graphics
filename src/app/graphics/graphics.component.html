@@ -5,6 +5,7 @@
         [style.left.px]="menuPositionLeft"
         [style.top.px]="menuPositionTop"></button>
 <mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="newConnection()" *ngIf="clickedShape && clickedShape.attrs.type===ShapeType.CAR">Új összeköttetés</button>
   <button mat-menu-item (click)="shapeToTop()">To top</button>
   <button mat-menu-item (click)="shapeToBottom()">To bottom</button>
   <button mat-menu-item (click)="deleteShape()">Delete</button>

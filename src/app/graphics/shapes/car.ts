@@ -1,4 +1,6 @@
 import Konva from "konva";
+import { Group } from "konva/lib/Group";
+import { Shape } from "konva/lib/Shape";
 import { Vector2d } from "konva/lib/types";
 import { ShapeType } from "src/app/_models/shape-type";
 
@@ -77,10 +79,25 @@ export class CarShape {
     })
     group.add(body, leftTyre, rightTyre)
 
+    this.drawLine(group, { x: 0, y: 0 });
+
+    // TODO eltüntetni a régi vonalakat vagy még jobb lenne hatni a kirajzoldakra
     const outerThis = this;
-    const center = this.getCenter();
+    group.on('dragmove', function (event) {
+      console.log(event);
+      let diff = { x: event.evt.movementX, y: event.evt.movementY };
+      // outerThis.drawLine(group, diff);
+    });
+
+    return group;
+  }
+
+  drawLine(group: Group, diff: Vector2d) {
+    let center = this.getCenter();
     this.neighbors.forEach(neighbor => {
-      const nCenter = neighbor.getCenter();
+      neighbor.x -= diff.x;
+      neighbor.y -= diff.y;
+      let nCenter = neighbor.getCenter();
 
       const perpendicular = {
         x: center.y - nCenter.y,
@@ -109,34 +126,12 @@ export class CarShape {
       // curve.setDraggable(false);
       group.add(curve);
     });
-
-    group.on('dragmove', function (event) {
-      // console.log("x: " + this.x() + " | y: " + this.y());
-      outerThis.broadcast();
-    });
-
-    return group;
   }
 
   getCenter(): Vector2d {
     return {
       x: this.x + this.width / 2,
       y: this.y + this.height / 2
-    }
-  }
-
-  broadcast() {
-    this.neighbors.forEach(it => {
-      it.receive(this.index, this.x, this.y);
-    });
-  }
-
-  receive(index: number, x: number, y: number) {
-    let changedNeighbor = this.neighbors.find(it => it.index == index);
-    
-    if (changedNeighbor) {
-      changedNeighbor.x = x;
-      changedNeighbor.y = y;
     }
   }
 
